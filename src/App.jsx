@@ -8,8 +8,8 @@ import GameBoard from './Components/GameBoard/GameBoard';
 import { CELL_STATE } from './Components/Cell/Cell';
 
 const DEFAULTS = Object.freeze({
-  WIDTH: 5,
-  HEIGHT: 5,
+  WIDTH: 15,
+  HEIGHT: 15,
   STATE: CELL_STATE.DEAD,
 });
 

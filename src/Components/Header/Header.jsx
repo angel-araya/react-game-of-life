@@ -54,7 +54,7 @@ function Header(props) {
             Pause
           </Button>
         </div>
-        <div>
+        <div style={{ display: 'none' }}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Grid
@@ -74,7 +74,7 @@ function Header(props) {
             </Grid>
           </Grid>
         </div>
-        <div>
+        <div style={{ display: 'none' }}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Grid
@@ -107,7 +107,7 @@ function Header(props) {
           onChange={(e, value) => updateWaitTime(value)}
         />
       </div>
-      <div className="container">
+      <div className="container" style={{ display: 'none' }}>
         <div>
           <h3>
             Generation: {generation}
