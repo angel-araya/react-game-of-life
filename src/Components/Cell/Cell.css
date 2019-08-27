@@ -1,0 +1,13 @@
+.alive {
+  padding: 10px;
+  background-color: blueviolet;
+}
+
+.dead {
+  padding: 10px;
+  background-color: black;
+}
+
+td {
+  border-radius: 50%;
+}

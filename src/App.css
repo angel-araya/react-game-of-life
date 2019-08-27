@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  /* same as the two above: 
+  flex-flow: row nowrap; */
+
+  justify-content: space-around;
+}
