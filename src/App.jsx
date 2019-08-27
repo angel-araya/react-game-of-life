@@ -260,8 +260,6 @@ class App extends Component {
     const { state } = this;
     return (
       <div>
-        <button type="button" onClick={this.debug}>debug</button>
-        <button type="button" onClick={() => window.location.reload()}>Reset</button>
         <div>
           <Header
             increaseRows={this.increaseRows}
