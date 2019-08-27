@@ -3,4 +3,4 @@ This is a React/JS version of [Conway's Game of Life](https://en.wikipedia.org/w
 
 The game simulates an infite (with wrap-around) matrix of dead/alive cells.
 
-[[https://raw.githubusercontent.com/angelaraya/react-game-of-life/master/public/gameoflife.png]]
+![game of life](https://raw.githubusercontent.com/angelaraya/react-game-of-life/master/public/gameoflife.png)
