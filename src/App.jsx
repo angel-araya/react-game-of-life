@@ -8,8 +8,8 @@ import GameBoard from './Components/GameBoard/GameBoard';
 import { CELL_STATE } from './Components/Cell/Cell';
 
 const DEFAULTS = Object.freeze({
-  WIDTH: 15,
-  HEIGHT: 15,
+  WIDTH: 5,
+  HEIGHT: 5,
   STATE: CELL_STATE.DEAD,
 });
 
@@ -45,6 +45,9 @@ class App extends Component {
       board: [],
       keyId: 0,
       generation: 0,
+      timerId: 0,
+      waitTime: 1000,
+      playing: false,
     };
 
     const { state } = this;
@@ -64,6 +67,15 @@ class App extends Component {
     this.flipCell = this.flipCell.bind(this);
     this.calcNextGeneration = this.calcNextGeneration.bind(this);
     this.play = this.play.bind(this);
+    this.pause = this.pause.bind(this);
+    this.updateWaitTime = this.updateWaitTime.bind(this);
+    this.randomize = this.randomize.bind(this);
+
+    this.debug = this.debug.bind(this);
+  }
+
+  componentDidMount() {
+    this.randomize();
   }
 
   increaseRows() {
@@ -91,6 +103,7 @@ class App extends Component {
     const { board } = this.state;
 
     if (board.length <= 2) {
+      // eslint-disable-next-line no-console
       console.info("Can't decrease the row count more");
       return;
     }
@@ -125,6 +138,7 @@ class App extends Component {
     const { board } = this.state;
 
     if (board[0].length <= 2) {
+      // eslint-disable-next-line no-console
       console.info("Can't decrease the column count more");
       return;
     }
@@ -163,10 +177,10 @@ class App extends Component {
       for (let j = 0; j < board[0].length; j += 1) {
         const nCount = this.countNeighbors(i, j, board);
 
-        if (board[j][i].state === CELL_STATE.ALIVE) {
-          newBoard[j][i].state = ALIVE_RULES[nCount];
+        if (board[i][j].state === CELL_STATE.ALIVE) {
+          newBoard[i][j].state = ALIVE_RULES[nCount];
         } else {
-          newBoard[j][i].state = DEAD_RULES[nCount];
+          newBoard[i][j].state = DEAD_RULES[nCount];
         }
       }
     }
@@ -175,9 +189,49 @@ class App extends Component {
   }
 
   play() {
-    
+    const { state } = this;
+
+    const timerId = setInterval(() => this.calcNextGeneration(), state.waitTime);
+
+    this.setState({ timerId, playing: true });
   }
 
+  pause() {
+    const { timerId } = this.state;
+
+    clearInterval(timerId);
+
+    this.setState({ playing: false });
+  }
+
+  updateWaitTime(newWaitTime) {
+    const { state } = this;
+    this.setState({ waitTime: newWaitTime }, () => {
+      if (!state.playing) return;
+
+      this.pause();
+      this.play();
+    });
+  }
+
+  randomize() {
+    const { board } = this.state;
+
+    for (let i = 0; i < board.length; i += 1) {
+      for (let j = 0; j < board[i].length; j += 1) {
+        const n = Math.random();
+        board[i][j].state = n > 0.7 ? CELL_STATE.ALIVE : CELL_STATE.DEAD;
+      }
+    }
+
+    this.setState({ board, generation: 0 });
+  }
+
+  debug() {
+    const { state } = this;
+    // eslint-disable-next-line no-console
+    console.log(state.board);
+  }
 
   countNeighbors(i, j, board) {
     const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0]];
@@ -216,6 +270,11 @@ class App extends Component {
             decreaseCols={this.decreaseCols}
             calcNextGen={this.calcNextGeneration}
             generation={state.generation}
+            play={this.play}
+            pause={this.pause}
+            waitTime={state.waitTime}
+            updateWaitTime={this.updateWaitTime}
+            randomize={this.randomize}
           />
         </div>
         <div>

@@ -2,14 +2,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button, Grid, ButtonGroup,
+  Button, Grid, ButtonGroup, Slider,
 } from '@material-ui/core';
 
 import './Header.css';
 
+const sliderMarks = [
+  { value: 100, label: '100ms' },
+  { value: 500, label: '0.5s' },
+  { value: 1000, label: '1s' },
+  { value: 1500, label: '1.5s' },
+  { value: 2000, label: '2s' },
+  { value: 2500, label: '2.5s' },
+
+];
+
 function Header(props) {
   const {
-    increaseRows, increaseCols, decreaseRows, decreaseCols, calcNextGen, generation,
+    increaseRows,
+    increaseCols,
+    decreaseRows,
+    decreaseCols,
+    calcNextGen,
+    generation,
+    play,
+    pause,
+    waitTime,
+    updateWaitTime,
+    randomize,
   } = props;
   return (
     <div>
@@ -17,6 +37,21 @@ function Header(props) {
         <div>
           <Button variant="contained" color="primary" onClick={calcNextGen}>
             Next Gen
+          </Button>
+        </div>
+        <div>
+          <Button variant="contained" color="primary" onClick={randomize}>
+            Randomize
+          </Button>
+        </div>
+        <div>
+          <Button variant="contained" color="primary" onClick={play}>
+            Play
+          </Button>
+        </div>
+        <div>
+          <Button variant="contained" color="primary" onClick={pause}>
+            Pause
           </Button>
         </div>
         <div>
@@ -61,6 +96,18 @@ function Header(props) {
         </div>
       </div>
       <div className="container">
+        <Slider
+          defaultValue={waitTime}
+          step={100}
+          marks={sliderMarks}
+          min={100}
+          max={2500}
+          valueLabelDisplay="on"
+          getAriaValueText={(value) => value}
+          onChange={(e, value) => updateWaitTime(value)}
+        />
+      </div>
+      <div className="container">
         <div>
           <h3>
             Generation: {generation}
@@ -76,11 +123,16 @@ Header.propTypes = {
   increaseCols: PropTypes.func.isRequired,
   decreaseRows: PropTypes.func.isRequired,
   decreaseCols: PropTypes.func.isRequired,
-  generation: PropTypes.string,
+  generation: PropTypes.number,
   calcNextGen: PropTypes.func.isRequired,
+  play: PropTypes.func.isRequired,
+  pause: PropTypes.func.isRequired,
+  waitTime: PropTypes.number.isRequired,
+  updateWaitTime: PropTypes.func.isRequired,
+  randomize: PropTypes.func.isRequired,
 };
 
 Header.defaultProps = {
-  generation: '0',
+  generation: 0,
 };
 export default Header;
