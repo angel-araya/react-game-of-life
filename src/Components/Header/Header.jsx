@@ -9,13 +9,13 @@ import './Header.css';
 
 function Header(props) {
   const {
-    increaseRows, increaseCols, decreaseRows, decreaseCols, flipCells, generation,
+    increaseRows, increaseCols, decreaseRows, decreaseCols, calcNextGen, generation,
   } = props;
   return (
     <div>
       <div className="container">
         <div>
-          <Button variant="contained" color="primary" onClick={flipCells}>
+          <Button variant="contained" color="primary" onClick={calcNextGen}>
             Next Gen
           </Button>
         </div>
@@ -77,7 +77,7 @@ Header.propTypes = {
   decreaseRows: PropTypes.func.isRequired,
   decreaseCols: PropTypes.func.isRequired,
   generation: PropTypes.string,
-  flipCells: PropTypes.func.isRequired,
+  calcNextGen: PropTypes.func.isRequired,
 };
 
 Header.defaultProps = {

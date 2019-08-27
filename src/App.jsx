@@ -7,12 +7,13 @@ import Header from './Components/Header/Header';
 import GameBoard from './Components/GameBoard/GameBoard';
 import { CELL_STATE } from './Components/Cell/Cell';
 
-const INITIAL_SIZE = Object.freeze({
-  X: 5,
-  Y: 5,
+const DEFAULTS = Object.freeze({
+  WIDTH: 15,
+  HEIGHT: 15,
+  STATE: CELL_STATE.DEAD,
 });
 
-const NEIGHBOR_RULES = Object.freeze({
+const ALIVE_RULES = Object.freeze({
   0: CELL_STATE.DEAD,
   1: CELL_STATE.DEAD,
   2: CELL_STATE.ALIVE,
@@ -24,22 +25,35 @@ const NEIGHBOR_RULES = Object.freeze({
   8: CELL_STATE.DEAD,
 });
 
+const DEAD_RULES = Object.freeze({
+  0: CELL_STATE.DEAD,
+  1: CELL_STATE.DEAD,
+  2: CELL_STATE.DEAD,
+  3: CELL_STATE.ALIVE,
+  4: CELL_STATE.DEAD,
+  5: CELL_STATE.DEAD,
+  7: CELL_STATE.DEAD,
+  6: CELL_STATE.DEAD,
+  8: CELL_STATE.DEAD,
+});
+
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       board: [],
       keyId: 0,
+      generation: 0,
     };
 
     const { state } = this;
 
-    for (let i = 0; i < INITIAL_SIZE.X; i += 1) {
+    for (let i = 0; i < DEFAULTS.HEIGHT; i += 1) {
       state.board.push([]);
 
-      for (let j = 0; j < INITIAL_SIZE.Y; j += 1) {
-        state.board[i].push({ state: CELL_STATE.ALIVE, id: state.keyId += 1 });
+      for (let j = 0; j < DEFAULTS.WIDTH; j += 1) {
+        state.board[i].push({ state: DEFAULTS.STATE, id: state.keyId += 1 });
       }
     }
 
@@ -47,11 +61,9 @@ class App extends Component {
     this.decreaseRows = this.decreaseRows.bind(this);
     this.increaseCols = this.increaseCols.bind(this);
     this.decreaseCols = this.decreaseCols.bind(this);
-    this.nextKey = this.nextKey.bind(this);
     this.flipCell = this.flipCell.bind(this);
-    this.flipCells = this.flipCells.bind(this);
     this.calcNextGeneration = this.calcNextGeneration.bind(this);
-    this.debug = this.debug.bind(this);
+    this.play = this.play.bind(this);
   }
 
   increaseRows() {
@@ -130,25 +142,6 @@ class App extends Component {
     this.setState({ board });
   }
 
-  nextKey() {
-    const { state } = this;
-    const key = state.keyId;
-
-    this.setState((prevState) => ({ keyId: prevState.keyId + 1 }));
-    return key;
-  }
-
-  flipCells() {
-    const { board } = this.state;
-
-    for (let i = 0; i < board.length; i += 1) {
-      for (let j = 0; j < board[i].length; j += 1) {
-        board[i][j].state = !board[i][j].state;
-      }
-    }
-    this.setState({ board });
-  }
-
   flipCell(id) {
     const { board } = this.state;
 
@@ -163,17 +156,26 @@ class App extends Component {
   }
 
   calcNextGeneration() {
-    const { board } = this.state;
+    const { board, generation } = this.state;
     const newBoard = JSON.parse(JSON.stringify(board));
 
     for (let i = 0; i < board.length; i += 1) {
       for (let j = 0; j < board[0].length; j += 1) {
         const nCount = this.countNeighbors(i, j, board);
-        newBoard[i][j].state = NEIGHBOR_RULES[nCount];
+
+        if (board[j][i].state === CELL_STATE.ALIVE) {
+          newBoard[j][i].state = ALIVE_RULES[nCount];
+        } else {
+          newBoard[j][i].state = DEAD_RULES[nCount];
+        }
       }
     }
 
-    this.setState({ board: newBoard });
+    this.setState({ board: newBoard, generation: generation + 1 });
+  }
+
+  play() {
+    
   }
 
 
@@ -181,7 +183,7 @@ class App extends Component {
     const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0]];
 
     // eslint-disable-next-line max-len
-    const countNeighborsReducer = (acc, [x, y]) => (board[x][y].state === CELL_STATE.ALIVE ? acc + 1 : acc);
+    const countNeighborsReducer = (acc, [x, y]) => (board[y][x].state === CELL_STATE.ALIVE ? acc + 1 : acc);
 
     return directions.map((dir) => {
       let x = 0;
@@ -200,12 +202,6 @@ class App extends Component {
     }).reduce(countNeighborsReducer, 0);
   }
 
-
-  debug() {
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(this.state));
-  }
-
   render() {
     const { state } = this;
     return (
@@ -218,7 +214,8 @@ class App extends Component {
             decreaseRows={this.decreaseRows}
             increaseCols={this.increaseCols}
             decreaseCols={this.decreaseCols}
-            flipCells={this.calcNextGeneration}
+            calcNextGen={this.calcNextGeneration}
+            generation={state.generation}
           />
         </div>
         <div>
