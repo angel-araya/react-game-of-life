@@ -102,7 +102,6 @@ function Header(props) {
           marks={sliderMarks}
           min={100}
           max={2500}
-          valueLabelDisplay="on"
           getAriaValueText={(value) => value}
           onChange={(e, value) => updateWaitTime(value)}
         />
